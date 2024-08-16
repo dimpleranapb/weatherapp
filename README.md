@@ -48,12 +48,17 @@ WeatherApp is a simple weather forecasting application built with React. It fetc
     ```
   - The application should now be running on your localhost
 
-Usage
-Enter a city name in the search bar and press enter.
-The application will display the current weather conditions, including temperature, humidity, and a brief description of the weather.
-The background image will change based on the weather condition.
-Contributing
-Contributions are welcome! Feel free to open an issue or submit a pull request.
+## Usage
+
+- **Search for a City:**
+  - Enter the name of a city in the search bar and press enter.
+
+- **View Weather Conditions:**
+  - The application will display the current weather conditions, including temperature, humidity, and a brief description of the weather.
+
+- **Weather-Based Images:**
+  - The background image will change automatically based on the weather condition (e.g., sunny, rainy, cloudy).
+
 
 License
 This project is licensed under the MIT License.
