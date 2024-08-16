@@ -2,64 +2,80 @@ import React, { useState } from "react";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import styles from "./SearchBox.module.css";
-import { teal } from "@mui/material/colors";
 
 export default function SearchBox({ updateInfo }) {
   const [city, setCity] = useState("");
+  const [error, setError] = useState(null);
 
   const API_URL = "https://api.openweathermap.org/data/2.5/weather";
-  const API_KEY = "dbb072884f359be3d32d8e109dd37807";
+  const API_KEY = import.meta.env.VITE_API_KEY; 
 
-  let getWeatherInfo = async () => {
-    let response = await fetch(
-      `${API_URL}?q=${city}&appid=${API_KEY}&units=metric`
-    );
-    let jsonResponse = await response.json();
-    console.log(jsonResponse);
-    let result = {
-      city: city,
-      temp: jsonResponse.main.temp,
-      tempMin: jsonResponse.main.temp_min,
-      tempmax: jsonResponse.main.temp_min,
-      humidity: jsonResponse.main.humidity,
-      feelsLike: jsonResponse.main.feels_like,
-      weather: jsonResponse.weather[0].description,
-    };
-    console.log(result);
-    return result;
+  const getWeatherInfo = async () => {
+    try {
+      const response = await fetch(
+        `${API_URL}?q=${city}&appid=${API_KEY}&units=metric`
+      );
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const jsonResponse = await response.json();
+
+      if (jsonResponse.cod !== 200) {
+        throw new Error(jsonResponse.message || "Error fetching data");
+      }
+
+      const result = {
+        city: city,
+        temp: jsonResponse.main.temp,
+        tempMin: jsonResponse.main.temp_min,
+        tempMax: jsonResponse.main.temp_max,
+        humidity: jsonResponse.main.humidity,
+        feelsLike: jsonResponse.main.feels_like,
+        weather: jsonResponse.weather[0].description,
+      };
+
+      return result;
+    } catch (error) {
+      setError(error.message);
+      return null;
+    }
   };
 
-  let handleChange = (e) => {
+  const handleChange = (e) => {
     setCity(e.target.value);
   };
 
-  let handleSubmit = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(city);
+    setError(null); // Clear previous errors
+    const newInfo = await getWeatherInfo();
+    if (newInfo) {
+      updateInfo(newInfo);
+    }
     setCity("");
-    let newInfo = await getWeatherInfo();
-    updateInfo(newInfo);
   };
 
   return (
     <div className={styles.SearchBox}>
       <h3>Search for the weather</h3>
-      <br></br>
-      <form>
+      <form onSubmit={handleSubmit}>
         <TextField
           onChange={handleChange}
+          value={city}
           id="city"
           label="City Name"
           variant="outlined"
           required
+          error={Boolean(error)}
+          helperText={error || ""}
         />
-        <br></br>
-        <br></br>
-        <Button onClick={handleSubmit} variant="contained">
+        <br />
+        <br />
+        <Button type="submit" variant="contained">
           Search
         </Button>
       </form>
-      <br></br>
+      {error && <p className={styles.error}>{error}</p>}
     </div>
   );
 }
