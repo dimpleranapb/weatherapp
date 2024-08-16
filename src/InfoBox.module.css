@@ -1,0 +1,7 @@
+.infoBox {
+  text-align: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
